@@ -12,31 +12,89 @@ Globals:
     MemorySize: 128
 
 Resources:
-  HelloWorldFunction:
+  AddCountFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: hello_world/
+      CodeUri: add_count/
       Handler: app.lambda_handler
       Runtime: python3.9
       Architectures:
         - x86_64
       Events:
-        HelloWorld:
+        AddVisitor:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /hello
+            Path: /add_count
+            Method: put
+      Policies:
+      # Read more about SAM policy templates here
+      # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
+       - AWSLambdaExecute
+       - DynamoDBCrudPolicy:
+          TableName: !Ref VisitorCountTable
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref VisitorCountTable
+  ReadCountFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: read_count/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+      Events:
+        AddVisitor:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /read_count
             Method: get
+      Policies:
+        # Read more about SAM policy templates here
+        # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
+        - AWSLambdaExecute
+        - DynamoDBCrudPolicy:
+            TableName: !Ref VisitorCountTable
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref VisitorCountTable
+
+
+  VisitorCountTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: "visitor_count"
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+  AddApi:
+    Description: "API Gateway endpoint URL for Prod stage for add function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/add_count/"
+  AddCountFunction:
+    Description: "Visitor Count Lambda Function ARN"
+    Value: !GetAtt AddCountFunction.Arn
+  AddCountFunctionIamRole:
+    Description: "Implicit IAM Role created for Add Count function"
+    Value: !GetAtt AddCountFunction.Arn
+  ReadApi:
+    Description: "API Gateway endpoint URL for Prod stage for read function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/read_count/"
+  ReadCountFunction:
+    Description: "Visitor Count Lambda Function ARN"
+    Value: !GetAtt ReadCountFunction.Arn
+  ReadCountFunctionIamRole:
+    Description: "Implicit IAM Role created for Read Count function"
+    Value: !GetAtt ReadCountFunction.Arn

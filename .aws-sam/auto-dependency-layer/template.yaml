@@ -1,0 +1,125 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'resume-backend
+
+  Sample SAM Template for resume-backend
+
+  '
+Globals:
+  Function:
+    Timeout: 3
+    MemorySize: 128
+Resources:
+  AddCountFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: AddCountFunction
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+      - x86_64
+      Events:
+        AddVisitor:
+          Type: Api
+          Properties:
+            Path: /add_count
+            Method: put
+      Policies:
+      - AWSLambdaExecute
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: VisitorCountTable
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: VisitorCountTable
+      Layers:
+      - Fn::GetAtt:
+        - AwsSamAutoDependencyLayerNestedStack
+        - Outputs.AddCountFunction69587d79DepLayer
+    Metadata:
+      SamResourceId: AddCountFunction
+  ReadCountFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ReadCountFunction
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+      - x86_64
+      Events:
+        AddVisitor:
+          Type: Api
+          Properties:
+            Path: /read_count
+            Method: get
+      Policies:
+      - AWSLambdaExecute
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: VisitorCountTable
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: VisitorCountTable
+      Layers:
+      - Fn::GetAtt:
+        - AwsSamAutoDependencyLayerNestedStack
+        - Outputs.ReadCountFunction246b7a90DepLayer
+    Metadata:
+      SamResourceId: ReadCountFunction
+  VisitorCountTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: visitor_count
+      AttributeDefinitions:
+      - AttributeName: id
+        AttributeType: S
+      KeySchema:
+      - AttributeName: id
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
+  AwsSamAutoDependencyLayerNestedStack:
+    DeletionPolicy: Delete
+    Metadata:
+      CreatedBy: AWS SAM CLI sync command
+    Properties:
+      TemplateURL: C:\Users\chmesser\PycharmProjects\resume_challenge\resume-backend\.aws-sam\auto-dependency-layer\adl_nested_template.yaml
+    Type: AWS::CloudFormation::Stack
+Outputs:
+  AddApi:
+    Description: API Gateway endpoint URL for Prod stage for add function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/add_count/
+  AddCountFunction:
+    Description: Visitor Count Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - AddCountFunction
+      - Arn
+  AddCountFunctionIamRole:
+    Description: Implicit IAM Role created for Add Count function
+    Value:
+      Fn::GetAtt:
+      - AddCountFunction
+      - Arn
+  ReadApi:
+    Description: API Gateway endpoint URL for Prod stage for read function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/read_count/
+  ReadCountFunction:
+    Description: Visitor Count Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - ReadCountFunction
+      - Arn
+  ReadCountFunctionIamRole:
+    Description: Implicit IAM Role created for Read Count function
+    Value:
+      Fn::GetAtt:
+      - ReadCountFunction
+      - Arn

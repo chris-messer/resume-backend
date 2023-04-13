@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS SAM CLI Nested Stack for Auto Dependency Layer Creation
+Metadata:
+  SamCliInfo: 1.76.0
+  key: AWS SAM CLI sync command
+Outputs:
+  AddCountFunction69587d79DepLayer:
+    Value:
+      Ref: AddCountFunction69587d79DepLayer
+  ReadCountFunction246b7a90DepLayer:
+    Value:
+      Ref: ReadCountFunction246b7a90DepLayer
+Resources:
+  AddCountFunction69587d79DepLayer:
+    Metadata:
+      CreatedBy: AWS SAM CLI sync command
+    Properties:
+      CompatibleRuntimes:
+      - python3.9
+      ContentUri: C:\Users\chmesser\PycharmProjects\resume_challenge\resume-backend\.aws-sam\auto-dependency-layer\AddCountFunction69587d79DepLayer
+      Description: Auto created layer for dependencies of function AddCountFunction
+      LayerName: resume-backend20d8887b-AddCountFunction69587d79-DepLayer
+      RetentionPolicy: Delete
+    Type: AWS::Serverless::LayerVersion
+  ReadCountFunction246b7a90DepLayer:
+    Metadata:
+      CreatedBy: AWS SAM CLI sync command
+    Properties:
+      CompatibleRuntimes:
+      - python3.9
+      ContentUri: C:\Users\chmesser\PycharmProjects\resume_challenge\resume-backend\.aws-sam\auto-dependency-layer\ReadCountFunction246b7a90DepLayer
+      Description: Auto created layer for dependencies of function ReadCountFunction
+      LayerName: resume-backend20d8887b-ReadCountFunction246b7a90-DepLayer
+      RetentionPolicy: Delete
+    Type: AWS::Serverless::LayerVersion
+Transform: AWS::Serverless-2016-10-31
