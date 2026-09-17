@@ -1,6 +1,8 @@
 # resume-backend
 
-This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
+This project contains the visitor-count API and DynamoDB table used by the resume site. Website hosting, certificates, CloudFront distributions, and DNS are managed separately and are intentionally outside this stack.
+
+The stack includes the following files and folders.
 
 - hello_world - Code for the application's Lambda function.
 - events - Invocation events that you can use to invoke the function.
